@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"io"
+	"io/fs"
 	"net/http"
 	"os"
 
@@ -10,7 +11,7 @@ import (
 )
 
 func Download(post booru.BooruPost) {
-	data, err := http.Get(post.FileUrl)
+	res, err := http.Get(post.FileUrl)
 	if err != nil {
 		if verbose {
 			fmt.Printf("download %v: %v", post.FileName, err)
@@ -18,26 +19,23 @@ func Download(post booru.BooruPost) {
 
 		return
 	}
-	defer data.Body.Close()
+	defer res.Body.Close()
 
-	f, err := os.Create(post.FileName)
+	data, err := io.ReadAll(res.Body)
 	if err != nil {
 		if verbose {
-			fmt.Printf("download %v: %v\n", post.FileName, err)
+			fmt.Printf("download %v: %v", post.FileName, err)
 		}
 
-		os.Remove(post.FileName)
 		return
 	}
-	defer f.Close()
 
-	_, err = io.Copy(f, data.Body)
+	err = os.WriteFile(post.FileName, data, fs.ModePerm)
 	if err != nil {
 		if verbose {
-			fmt.Printf("download %v: %v\n", post.FileName, err)
+			fmt.Printf("download %v: %v", post.FileName, err)
 		}
 
-		os.Remove(post.FileName)
 		return
 	}
 
