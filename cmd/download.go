@@ -14,7 +14,7 @@ func Download(post booru.BooruPost) {
 	res, err := http.Get(post.FileUrl)
 	if err != nil {
 		if verbose {
-			fmt.Printf("download %v: %v", post.FileName, err)
+			fmt.Printf("download %v: %v\n", post.FileName, err)
 		}
 
 		return
@@ -24,7 +24,7 @@ func Download(post booru.BooruPost) {
 	data, err := io.ReadAll(res.Body)
 	if err != nil {
 		if verbose {
-			fmt.Printf("download %v: %v", post.FileName, err)
+			fmt.Printf("download %v: %v\n", post.FileName, err)
 		}
 
 		return
@@ -33,7 +33,7 @@ func Download(post booru.BooruPost) {
 	err = os.WriteFile(post.FileName, data, fs.ModePerm)
 	if err != nil {
 		if verbose {
-			fmt.Printf("download %v: %v", post.FileName, err)
+			fmt.Printf("download %v: %v\n", post.FileName, err)
 		}
 
 		return
